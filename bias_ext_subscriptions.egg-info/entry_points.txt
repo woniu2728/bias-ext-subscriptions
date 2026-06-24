@@ -1,0 +1,2 @@
+[bias.extensions]
+subscriptions = bias_ext_subscriptions.backend.ext:extend
