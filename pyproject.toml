@@ -4,6 +4,14 @@ version = "0.1.0"
 dependencies = ["bias-core>=0.1,<0.2"]
 [project.entry-points."bias.extensions"]
 subscriptions = "bias_ext_subscriptions.backend.ext:extend"
+[tool.setuptools]
+include-package-data = true
+
 [tool.setuptools.packages.find]
 where = ["."]
 include = ["bias_ext_subscriptions*"]
+
+[tool.setuptools.data-files]
+"bias_extensions/subscriptions" = ["extension.json"]
+"bias_extensions/subscriptions/frontend/forum" = ["frontend/forum/index.js", "frontend/forum/sdk.js", "frontend/forum/subscriptionRuntime.js"]
+
