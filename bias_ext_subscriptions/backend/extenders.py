@@ -11,7 +11,7 @@ from bias_core.extensions import (
 )
 
 from bias_ext_subscriptions.backend.forum_contracts import discussion_list_filter_definitions
-from bias_ext_subscriptions.backend.frontend import frontend_extender
+from bias_ext_subscriptions.backend.frontend import discussion_frontend_extender
 from bias_ext_subscriptions.backend.listener_contracts import (
     post_notification_event_listener_definitions,
     post_subscription_event_listener_definitions,
@@ -33,7 +33,11 @@ from bias_ext_subscriptions.backend.search_contracts import (
 
 
 def frontend_extenders():
-    return (frontend_extender(),)
+    return ()
+
+
+def discussion_frontend_extenders():
+    return (discussion_frontend_extender(),)
 
 
 def forum_extenders():
@@ -94,6 +98,7 @@ def post_notification_integration_extenders():
 
 def optional_integration_extenders():
     return (
+        ConditionalExtender().when_extension_enabled("discussions", discussion_frontend_extenders),
         ConditionalExtender().when_extension_enabled("content", post_integration_extenders),
         ConditionalExtender().when(
             lambda host: _is_extension_enabled(host, "content") and _is_extension_enabled(host, "notifications"),

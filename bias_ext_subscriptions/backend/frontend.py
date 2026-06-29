@@ -3,7 +3,7 @@ from __future__ import annotations
 from bias_core.extensions import FrontendExtender
 
 
-def frontend_extender():
+def discussion_frontend_extender():
     return (
         FrontendExtender(
             forum_entry="extensions/subscriptions/frontend/forum/index.js",
