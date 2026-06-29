@@ -7,7 +7,14 @@
     "Bias"
   ],
   "dependencies": [
-    "core"
+    "core",
+    "content",
+    "discussions",
+    "users"
+  ],
+  "optional_dependencies": [
+    "posts",
+    "notifications"
   ],
   "django": {
     "app_config": "bias_ext_subscriptions.backend.apps.SubscriptionsExtensionConfig",
