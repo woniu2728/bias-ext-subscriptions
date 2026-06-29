@@ -3,7 +3,7 @@ from bias_core.extensions.runtime import (
 )
 from bias_core.extensions.runtime import (
     delete_runtime_discussion_reply_notifications_for_post,
-    get_runtime_post_number,
+    get_runtime_discussion_post_number,
     notify_runtime_notification,
 )
 from bias_core.extensions.runtime import (
@@ -102,7 +102,7 @@ def _follow_discussion_if_enabled(
         return
 
     if last_read_post_number is None and post_id is not None:
-        last_read_post_number = get_runtime_post_number(post_id)
+        last_read_post_number = get_runtime_discussion_post_number(post_id)
 
     follow_runtime_discussion(
         discussion_id=discussion_id,
