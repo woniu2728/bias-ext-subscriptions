@@ -1,15 +1,39 @@
-from bias_core.extensions.runtime import (
-    follow_runtime_discussion,
-)
-from bias_core.extensions.runtime import (
-    delete_runtime_discussion_reply_notifications_for_post,
-    get_runtime_discussion_post_number,
-    notify_runtime_notification,
-)
-from bias_core.extensions.runtime import (
-    get_runtime_user_by_id,
-    get_runtime_user_preference,
-)
+def delete_runtime_discussion_reply_notifications_for_post(*args, **kwargs):
+    from bias_core.extensions.runtime import (
+        delete_runtime_discussion_reply_notifications_for_post as runtime_delete_discussion_reply_notifications_for_post,
+    )
+
+    return runtime_delete_discussion_reply_notifications_for_post(*args, **kwargs)
+
+
+def follow_runtime_discussion(*args, **kwargs):
+    from bias_core.extensions.runtime import follow_runtime_discussion as runtime_follow_discussion
+
+    return runtime_follow_discussion(*args, **kwargs)
+
+
+def get_runtime_discussion_post_number(*args, **kwargs):
+    from bias_core.extensions.runtime import get_runtime_discussion_post_number as runtime_get_discussion_post_number
+
+    return runtime_get_discussion_post_number(*args, **kwargs)
+
+
+def get_runtime_user_by_id(*args, **kwargs):
+    from bias_core.extensions.runtime import get_runtime_user_by_id as runtime_get_user_by_id
+
+    return runtime_get_user_by_id(*args, **kwargs)
+
+
+def get_runtime_user_preference(*args, **kwargs):
+    from bias_core.extensions.runtime import get_runtime_user_preference as runtime_get_user_preference
+
+    return runtime_get_user_preference(*args, **kwargs)
+
+
+def notify_runtime_notification(*args, **kwargs):
+    from bias_core.extensions.runtime import notify_runtime_notification as runtime_notify_notification
+
+    return runtime_notify_notification(*args, **kwargs)
 
 
 def handle_post_created_discussion_reply_notification(event) -> None:

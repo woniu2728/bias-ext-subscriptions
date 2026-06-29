@@ -3,19 +3,40 @@ from ninja_jwt.tokens import RefreshToken
 from unittest.mock import patch
 
 from bias_core.extensions.testing import ExtensionRuntimeTestMixin, build_extension_test_host
-from bias_core.extensions.runtime import (
-    create_runtime_discussion,
-    get_runtime_discussion_state_model,
-)
-from bias_core.extensions.runtime import get_runtime_notification_model
-from bias_core.extensions.runtime import (
-    create_runtime_post,
-    delete_runtime_post,
-    set_runtime_post_hidden_state,
-)
-from bias_core.extensions.runtime import (
-    get_runtime_user_model,
-)
+
+
+def _runtime_facade(name: str):
+    from importlib import import_module
+
+    return getattr(import_module("bias_core.extensions.runtime"), name)
+
+
+def create_runtime_discussion(*args, **kwargs):
+    return _runtime_facade("create_runtime_discussion")(*args, **kwargs)
+
+
+def create_runtime_post(*args, **kwargs):
+    return _runtime_facade("create_runtime_post")(*args, **kwargs)
+
+
+def delete_runtime_post(*args, **kwargs):
+    return _runtime_facade("delete_runtime_post")(*args, **kwargs)
+
+
+def get_runtime_discussion_state_model(*args, **kwargs):
+    return _runtime_facade("get_runtime_discussion_state_model")(*args, **kwargs)
+
+
+def get_runtime_notification_model(*args, **kwargs):
+    return _runtime_facade("get_runtime_notification_model")(*args, **kwargs)
+
+
+def get_runtime_user_model(*args, **kwargs):
+    return _runtime_facade("get_runtime_user_model")(*args, **kwargs)
+
+
+def set_runtime_post_hidden_state(*args, **kwargs):
+    return _runtime_facade("set_runtime_post_hidden_state")(*args, **kwargs)
 
 
 class RuntimeModelProxy:

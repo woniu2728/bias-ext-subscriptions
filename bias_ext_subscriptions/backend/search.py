@@ -1,6 +1,10 @@
 from __future__ import annotations
 
-from bias_core.extensions.runtime import get_runtime_discussion_state_model
+
+def get_runtime_discussion_state_model(*args, **kwargs):
+    from bias_core.extensions.runtime import get_runtime_discussion_state_model as runtime_get_discussion_state_model
+
+    return runtime_get_discussion_state_model(*args, **kwargs)
 
 
 def parse_following_search_filter(token: str) -> bool | None:
