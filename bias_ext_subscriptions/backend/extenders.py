@@ -33,10 +33,6 @@ from bias_ext_subscriptions.backend.search_contracts import (
 
 
 def frontend_extenders():
-    return ()
-
-
-def discussion_frontend_extenders():
     return (discussion_frontend_extender(),)
 
 
@@ -98,7 +94,6 @@ def post_notification_integration_extenders():
 
 def optional_integration_extenders():
     return (
-        ConditionalExtender().when_extension_enabled("discussions", discussion_frontend_extenders),
         ConditionalExtender().when_extension_enabled("content", post_integration_extenders),
         ConditionalExtender().when(
             lambda host: _is_extension_enabled(host, "content") and _is_extension_enabled(host, "notifications"),

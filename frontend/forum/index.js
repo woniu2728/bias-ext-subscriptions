@@ -56,6 +56,21 @@ function registerSubscriptionsForum(forum) {
     }),
   })
 
+  forum.discussionListRequest({
+    key: 'following-filter',
+    moduleId: 'subscriptions',
+    order: 20,
+    isVisible: ({ isFollowingPage }) => Boolean(isFollowingPage),
+    resolve: () => ({
+      apply({ params }) {
+        return {
+          ...params,
+          filter: 'following',
+        }
+      },
+    }),
+  })
+
   forum.uiCopy({
     key: 'discussion-list-following-hero-pill',
     moduleId: 'subscriptions',

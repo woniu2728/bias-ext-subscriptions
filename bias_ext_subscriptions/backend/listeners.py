@@ -1,39 +1,25 @@
-def delete_runtime_discussion_reply_notifications_for_post(*args, **kwargs):
-    from bias_core.extensions.runtime import (
-        delete_runtime_discussion_reply_notifications_for_post as runtime_delete_discussion_reply_notifications_for_post,
-    )
+def get_content_discussion_service():
+    from bias_core.extensions.runtime import get_runtime_service
 
-    return runtime_delete_discussion_reply_notifications_for_post(*args, **kwargs)
+    return get_runtime_service("content.discussions")
 
 
-def follow_runtime_discussion(*args, **kwargs):
-    from bias_core.extensions.runtime import follow_runtime_discussion as runtime_follow_discussion
+def get_content_post_service():
+    from bias_core.extensions.runtime import get_runtime_service
 
-    return runtime_follow_discussion(*args, **kwargs)
-
-
-def get_runtime_discussion_post_number(*args, **kwargs):
-    from bias_core.extensions.runtime import get_runtime_discussion_post_number as runtime_get_discussion_post_number
-
-    return runtime_get_discussion_post_number(*args, **kwargs)
+    return get_runtime_service("content.posts")
 
 
-def get_runtime_user_by_id(*args, **kwargs):
-    from bias_core.extensions.runtime import get_runtime_user_by_id as runtime_get_user_by_id
+def get_user_service():
+    from bias_core.extensions.runtime import get_runtime_service
 
-    return runtime_get_user_by_id(*args, **kwargs)
-
-
-def get_runtime_user_preference(*args, **kwargs):
-    from bias_core.extensions.runtime import get_runtime_user_preference as runtime_get_user_preference
-
-    return runtime_get_user_preference(*args, **kwargs)
+    return get_runtime_service("users.service")
 
 
-def notify_runtime_notification(*args, **kwargs):
-    from bias_core.extensions.runtime import notify_runtime_notification as runtime_notify_notification
+def get_notification_service():
+    from bias_core.extensions.runtime import get_runtime_service
 
-    return runtime_notify_notification(*args, **kwargs)
+    return get_runtime_service("notifications.service")
 
 
 def handle_post_created_discussion_reply_notification(event) -> None:
@@ -105,12 +91,13 @@ def _notify_discussion_reply(*, discussion_id: int, post_id: int, actor_user_id:
     if from_user is None:
         return
 
-    notify_runtime_notification(
-        "notify_discussion_reply",
-        discussion_id=discussion_id,
-        post_id=post_id,
-        from_user=from_user,
-    )
+    notification_service = get_notification_service()
+    if notification_service is None:
+        return
+    notify_discussion_reply = _service_method(notification_service, "notify_discussion_reply")
+    if notify_discussion_reply is None:
+        return
+    notify_discussion_reply(discussion_id=discussion_id, post_id=post_id, from_user=from_user)
 
 
 def _follow_discussion_if_enabled(
@@ -122,13 +109,13 @@ def _follow_discussion_if_enabled(
     last_read_post_number: int | None = None,
 ) -> None:
     user = _resolve_user_or_none(user_id)
-    if user is None or not get_runtime_user_preference(user, preference_key, fallback=False):
+    if user is None or not _get_user_preference(user, preference_key, fallback=False):
         return
 
     if last_read_post_number is None and post_id is not None:
-        last_read_post_number = get_runtime_discussion_post_number(post_id)
+        last_read_post_number = _service_method(get_content_post_service(), "get_post_number")(post_id)
 
-    follow_runtime_discussion(
+    _service_method(get_content_discussion_service(), "follow_if_enabled")(
         discussion_id=discussion_id,
         user_id=user_id,
         last_read_post_number=last_read_post_number,
@@ -137,11 +124,33 @@ def _follow_discussion_if_enabled(
 
 def _resolve_user_or_none(user_id: int):
     try:
-        return get_runtime_user_by_id(user_id)
+        return _service_method(get_user_service(), "get_by_id")(user_id)
     except Exception:
         return None
 
 
+def _get_user_preference(user, key: str, *, fallback=False):
+    get_preference = _service_method(get_user_service(), "get_preference")
+    try:
+        return get_preference(user, key, fallback=fallback)
+    except TypeError:
+        value = get_preference(user, key)
+        return fallback if value is None else value
+
+
 def _delete_discussion_reply_notifications_for_post(post_id: int) -> None:
-    delete_runtime_discussion_reply_notifications_for_post(post_id)
+    notification_service = get_notification_service()
+    if notification_service is None:
+        return
+    delete_for_post = _service_method(notification_service, "delete_discussion_reply_for_post")
+    if delete_for_post is not None:
+        delete_for_post(post_id)
+
+
+def _service_method(service, name: str):
+    if isinstance(service, dict):
+        method = service.get(name)
+    else:
+        method = getattr(service, name, None)
+    return method if callable(method) else None
 

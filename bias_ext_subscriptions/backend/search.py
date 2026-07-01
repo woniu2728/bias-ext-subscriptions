@@ -1,10 +1,10 @@
 from __future__ import annotations
 
 
-def get_runtime_discussion_state_model(*args, **kwargs):
-    from bias_core.extensions.runtime import get_runtime_discussion_state_model as runtime_get_discussion_state_model
+def get_content_discussion_service():
+    from bias_core.extensions.runtime import get_runtime_service
 
-    return runtime_get_discussion_state_model(*args, **kwargs)
+    return get_runtime_service("content.discussions")
 
 
 def parse_following_search_filter(token: str) -> bool | None:
@@ -35,11 +35,21 @@ def apply_following_discussion_list_filter(queryset, context: dict):
 
 
 def _filter_following_discussions(queryset, user):
-    DiscussionUser = get_runtime_discussion_state_model()
+    DiscussionUser = _service_value(get_content_discussion_service(), "state_model")
     return queryset.filter(
         pk__in=DiscussionUser.objects.filter(
             user=user,
             is_subscribed=True,
         ).values("discussion_id")
     )
+
+
+def _service_value(service, name: str):
+    if isinstance(service, dict):
+        value = service.get(name)
+    else:
+        value = getattr(service, name, None)
+    if value is None:
+        raise RuntimeError(f"Subscriptions 扩展运行时服务缺少值: {name}")
+    return value
 
